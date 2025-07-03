@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>센스있는 선물 - Sensegift</title>
+    
+    <link href="/dist/output.css" rel="stylesheet">
+    
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Maru+Buri:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased">
+
+
+    <div id="menu-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+    <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex justify-between items-center mb-8">
+            <h4 class="font-maru text-xl font-semibold text-[#2F4858]">Menu</h4>
+            <button id="mobile-menu-close-btn" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <nav class="flex flex-col space-y-4">
+            <a href="guide.html" class="text-lg text-gray-700 hover:text-[#2F4858] transition-colors">이용안내</a>
+            <a href="contact.html" class="text-lg text-gray-700 hover:text-[#2F4858] transition-colors">문의하기</a>
+        </nav>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6">
+
+        <header class="py-6 flex justify-between items-center">
+            <a href="index.html" class="font-maru text-2xl sm:text-3xl font-semibold text-[#2F4858]">Sensegift</a>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="guide.html" class="text-gray-600 hover:text-[#2F4858] transition-colors">이용안내</a>
+                <a href="contact.html" class="text-gray-600 hover:text-[#2F4858] transition-colors">문의하기</a>
+            </nav>
+            <button id="mobile-menu-btn" class="md:hidden text-3xl text-[#2F4858]">☰</button>
+        </header>
+
+        <section class="hero-bg text-center pt-16 pb-12 lg:pt-24 lg:pb-20 rounded-3xl">
+            <h1 class="hero-title font-maru text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#2F4858] leading-tight mb-4">누구를 위한 선물인가요?</h1>
+            <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-8">받는 분을 위한 몇 가지 질문에 답해주세요.</p>
+            
+            <button id="filter-trigger-btn" class="find-gift-btn text-[#2F4858] font-bold py-3 px-6 rounded-full text-base sm:text-lg">
+                선물 추천받기
+            </button>
+
+            <div id="filter-panel" class="filter-panel filter-container max-w-4xl mx-auto rounded-2xl">
+                <div class="p-8 text-left space-y-6">
+                    </div>
+            </div>
+        </section>
+        
+        <section id="product-section" class="py-16 sm:py-20">
+            <div id="result-title-container" class="text-center mb-10 sm:mb-12">
+                 <h2 id="result-title" class="section-title font-maru inline-block text-2xl sm:text-3xl font-semibold text-[#2F4858] relative pb-2">
+                    지금, 가장 사랑받는 선물
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 border-b-2 border-[#D4A373]"></span>
+                 </h2>
+            </div>
+            <div id="loader" class="hidden justify-center items-center py-16">
+                <div style="border-top-color: #2F4858;" class="w-10 h-10 border-4 border-gray-200 rounded-full animate-spin"></div>
+            </div>
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+                </div>
+        </section>
+
+        <footer class="py-12 border-t border-gray-200/80 mt-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+                <div>
+                    <h4 class="font-maru text-xl font-semibold mb-4 text-[#2F4858]">Sensegift</h4>
+                    <p class="text-sm text-gray-500">마음을 전달하는 가장<br>센스있는 방법을 제안합니다.</p>
+                </div>
+                <div>
+                     <h4 class="font-semibold text-gray-800 mb-4">서비스</h4>
+                     <ul class="space-y-2 text-sm text-gray-600">
+                         <li><a href="index.html" class="hover:underline">선물 추천받기</a></li>
+                         <li><a href="guide.html" class="hover:underline">이용안내</a></li>
+                     </ul>
+                </div>
+                 <div>
+                     <h4 class="font-semibold text-gray-800 mb-4">고객지원</h4>
+                     <ul class="space-y-2 text-sm text-gray-600">
+                         <li><a href="faq.html" class="hover:underline">자주 묻는 질문</a></li>
+                         <li><a href="contact.html" class="hover:underline">문의하기</a></li>
+                         <li><a href="terms.html" class="hover:underline">이용약관</a></li>
+                     </ul>
+                </div>
+                 <div>
+                     <h4 class="font-semibold text-gray-800 mb-4">소셜</h4>
+                     <div class="flex justify-center md:justify-start space-x-4 text-sm">
+                        <a href="#" class="text-gray-500 hover:text-[#2F4858]">Instagram</a>
+                     </div>
+                </div>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-12">&copy; 2025 Sensegift. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

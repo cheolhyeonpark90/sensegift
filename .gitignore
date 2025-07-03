@@ -1,0 +1,32 @@
+# .gitignore
+
+# Node.js 의존성 라이브러리
+# 이 폴더는 'npm install' 명령어로 언제든지 재생성할 수 있습니다.
+node_modules/
+
+# 환경 변수 파일
+# API 키와 같은 민감한 정보를 포함하므로 절대로 Git에 커밋하면 안 됩니다.
+.env
+
+# 로그 파일
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 스크립트 실행으로 생성된 데이터 폴더
+# 생성된 JSON 파일을 Git으로 관리하고 싶지 않다면 이 줄의 주석을 해제하세요.
+# data/
+
+# Playwright 크롤러가 생성하는 오류 스크린샷
+error_screenshot.png
+naver_error_screenshot.png
+
+# 운영체제(OS) 생성 파일
+.DS_Store
+Thumbs.db
+
+# 에디터 및 IDE 설정 폴더
+.vscode/
+.idea/
