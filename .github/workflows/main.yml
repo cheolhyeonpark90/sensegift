@@ -1,0 +1,60 @@
+# 워크플로우의 이름
+name: Collect Keywords and Coupang Products
+
+# 이 워크플로우가 언제 실행될지 정의합니다.
+on:
+  # 1. 매주 월요일 새벽 3시(KST)에 자동으로 실행됩니다. (UTC 기준 일요일 18시)
+  schedule:
+    - cron: '0 18 * * 0'
+  
+  # 2. GitHub Actions 탭에서 수동으로 실행할 수도 있습니다.
+  workflow_dispatch:
+
+# 실행될 작업(Job)들을 정의합니다.
+jobs:
+  # 'build-and-run' 이라는 이름의 작업을 정의합니다.
+  build-and-run:
+    # 이 작업은 최신 버전의 우분투(리눅스) 환경에서 실행됩니다.
+    runs-on: ubuntu-latest
+
+    # [추가] 이 작업에 필요한 권한을 명시적으로 부여합니다.
+    permissions:
+      contents: write # 저장소 콘텐츠(파일)에 대한 쓰기 권한
+
+    # 작업의 단계(Step)들을 순서대로 정의합니다.
+    steps:
+      # 1. 저장소의 코드를 실행 환경으로 가져옵니다(Checkout).
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Node.js 환경을 설정합니다. (버전 18.x 사용)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # 3. package.json에 명시된 모든 라이브러리를 설치합니다.
+      - name: Install dependencies
+        run: npm install
+
+      # 4. 메인 스크립트(run.js)를 실행합니다.
+      # GitHub Secrets에 저장한 값을 환경 변수로 주입해줍니다.
+      - name: Run the main script
+        run: node run.js
+        env:
+          COUPANG_ACCESS_KEY: ${{ secrets.COUPANG_ACCESS_KEY }}
+          COUPANG_SECRET_KEY: ${{ secrets.COUPANG_SECRET_KEY }}
+
+      # 5. 결과 파일(JSON)에 변경사항이 있을 경우, 저장소에 자동으로 커밋합니다.
+      - name: Commit and push if files changed
+        run: |
+          # git 설정을 봇으로 지정합니다.
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # 두 개의 결과 파일을 스테이징합니다.
+          git add rankings.json
+          git add coupang_products.json
+          
+          # 파일에 변경사항이 있는지 확인하고, 변경된 경우에만 커밋 및 푸시를 실행합니다.
+          git diff --staged --quiet || (git commit -m "Update data files" && git push)
