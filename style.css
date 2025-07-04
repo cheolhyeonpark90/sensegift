@@ -104,3 +104,41 @@ body {
 body.overflow-hidden {
     overflow: hidden;
 }
+
+/* --- Pagination Styles (New Design) --- */
+.pagination-btn {
+    width: 2.5rem; /* 40px */
+    height: 2.5rem; /* 40px */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid transparent;
+    background-color: transparent;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #5a7281;
+    border-radius: 9999px; /* 원형 버튼 */
+    transition: all 0.2s ease-in-out;
+}
+.pagination-btn:hover:not([disabled]) {
+    background-color: #f3f0e9; /* 부드러운 배경색으로 호버 효과 */
+    color: #2F4858;
+}
+.pagination-btn.active {
+    background-color: #2F4858;
+    color: white;
+    border-color: #2F4858;
+    cursor: default;
+}
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.pagination-ellipsis {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: #b0a89a;
+}
