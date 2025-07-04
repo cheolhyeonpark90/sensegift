@@ -36,8 +36,8 @@ async function initializeApp() {
     toggleLoader(loader, true);
     try {
         const [productsResponse, rankingsResponse] = await Promise.all([
-            fetch('../coupang_products.json'),
-            fetch('../rankings.json')
+            fetch('coupang_products.json'),
+            fetch('rankings.json')
         ]);
 
         if (!productsResponse.ok || !rankingsResponse.ok) {
