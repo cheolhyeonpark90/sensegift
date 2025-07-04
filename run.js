@@ -1,7 +1,7 @@
 /**
  * @file run.js
  * @description [완성본] 1. 네이버 데이터랩에서 상세 키워드 정보를 크롤링하여 rankings.json으로 저장하고, 2. API 호출 제한을 지키며 쿠팡 상품 정보를 수집/변환하여 coupang_products.json으로 저장합니다.
- * @version 3.5.0
+ * @version 4.2.0
  */
 
 // .env 파일의 환경 변수를 로드합니다. (가장 위에 위치해야 함)
@@ -35,7 +35,8 @@ const NAVER_SELECTORS = {
 };
 
 const NAVER_CATEGORIES = [
-  { name: '패션의류', cid: '50000000' }, { name: '패션잡화', cid: '50000001' }, { name: '화장품/미용', cid: '50000002' }, { name: '디지털/가전', cid: '50000003' }, { name: '가구/인테리어', cid: '50000004' }, { name: '출산/육아', cid: '50000005' }, { name: '식품', cid: '50000006' }, { name: '스포츠/레저', cid: '50000007' }, { name: '생활/건강', cid: '50000008' }, { name: '여가/생활편의', cid: '50000009' }, { name: '도서', cid: '50005542' },
+  { name: '패션의류', cid: '50000000' }, 
+//   { name: '패션잡화', cid: '50000001' }, { name: '화장품/미용', cid: '50000002' }, { name: '디지털/가전', cid: '50000003' }, { name: '가구/인테리어', cid: '50000004' }, { name: '출산/육아', cid: '50000005' }, { name: '식품', cid: '50000006' }, { name: '스포츠/레저', cid: '50000007' }, { name: '생활/건강', cid: '50000008' }, { name: '여가/생활편의', cid: '50000009' }, { name: '도서', cid: '50005542' },
 ];
 const GENDERS = [ { name: '전체', selector: NAVER_SELECTORS.gender.all }, { name: '여성', selector: NAVER_SELECTORS.gender.female }, { name: '남성', selector: NAVER_SELECTORS.gender.male } ];
 const AGES = [ { name: '전체', selector: NAVER_SELECTORS.age.all }, { name: '10대', selector: NAVER_SELECTORS.age['10s'] }, { name: '20대', selector: NAVER_SELECTORS.age['20s'] }, { name: '30대', selector: NAVER_SELECTORS.age['30s'] }, { name: '40대', selector: NAVER_SELECTORS.age['40s'] }, { name: '50대', selector: NAVER_SELECTORS.age['50s'] }, { name: '60대 이상', selector: NAVER_SELECTORS.age['60s'] } ];
@@ -189,7 +190,8 @@ const DOMAIN = "https://api-gateway.coupang.com";
 const SEARCH_PATH = "/v2/providers/affiliate_open_api/apis/openapi/products/search";
 const DEEPLINK_PATH = "/v2/providers/affiliate_open_api/apis/openapi/v1/deeplink";
 
-const limiter = new RateLimiter({ tokensPerInterval: 45, interval: 60000 });
+// [수정] API 호출 제한을 분당 70회로 설정 (루프당 2회 소모 -> 분당 35개 키워드 처리)
+const limiter = new RateLimiter({ tokensPerInterval: 70, interval: 60000 });
 
 function generateHmac(method, path, query, secretKey, accessKey) {
     const datetime = moment.utc().format('YYMMDD[T]HHmmss[Z]');
@@ -259,12 +261,28 @@ async function processCoupangProducts(keywords) {
     // 2. 이번 실행의 결과를 담을 새로운 Map을 생성합니다.
     let currentRunProducts = new Map();
 
-    // 3. 모든 키워드를 순회하며 상품 정보를 수집합니다.
+    // 3. 모든 키워드를 순회하며 상품 정보를 수집하고 즉시 처리합니다.
     for (const keyword of keywords) {
-        await limiter.removeTokens(1);
+        // 루프 시작 시, 검색(1)+딥링크(1)에 필요한 토큰 2개를 미리 소모합니다.
+        await limiter.removeTokens(2);
+        
         console.log(`[API 호출] '${keyword}' 키워드로 상품 검색...`);
         const products = await searchProducts(keyword);
 
+        // 3-1. 이번 검색 결과에서 딥링크가 필요한 새 상품만 필터링합니다.
+        const productsThatNeedDeeplink = products.filter(p => 
+            !referenceProducts.has(p.productId.toString()) && 
+            !currentRunProducts.has(p.productId.toString())
+        );
+
+        // 3-2. 필요한 경우에만 딥링크 API를 호출합니다.
+        let shortenedUrlMap = new Map();
+        if (productsThatNeedDeeplink.length > 0) {
+            console.log(`  - 새로운 상품 ${productsThatNeedDeeplink.length}개에 대한 딥링크 변환 요청...`);
+            shortenedUrlMap = await getShortenedUrls(productsThatNeedDeeplink);
+        }
+        
+        // 3-3. 이번 검색 결과를 최종 목록에 추가하거나 업데이트합니다.
         products.forEach(product => {
             const productIdStr = product.productId.toString();
             if (currentRunProducts.has(productIdStr)) {
@@ -277,41 +295,23 @@ async function processCoupangProducts(keywords) {
                     existingProduct.rank = product.rank;
                 }
             } else {
-                // 이번 실행에서 처음 발견된 상품이면 Map에 추가합니다.
+                // 이번 실행에서 처음 발견된 상품이면...
+                // URL을 결정합니다: (1)방금 받은 딥링크 (2)참조용 기존 딥링크 (3)원본 URL
+                if (shortenedUrlMap.has(product.productId)) {
+                    product.productUrl = shortenedUrlMap.get(product.productId);
+                } else if (referenceProducts.has(productIdStr)) {
+                    product.productUrl = referenceProducts.get(productIdStr).productUrl;
+                }
+                // 그 외의 경우는 원본 URL이 그대로 유지됩니다.
+
+                // 최종 목록에 추가합니다.
                 product.keywords = [keyword];
                 currentRunProducts.set(productIdStr, product);
             }
         });
     }
-
-    console.log(`\n  - 총 ${currentRunProducts.size}개의 유니크한 상품을 찾았습니다. 딥링크 처리를 시작합니다.`);
-
-    // 4. 딥링크가 필요한 새로운 상품들만 필터링합니다. (참조용 데이터에 없는 상품)
-    const productsThatNeedDeeplink = Array.from(currentRunProducts.values())
-        .filter(p => !referenceProducts.has(p.productId.toString()));
-
-    if (productsThatNeedDeeplink.length > 0) {
-        console.log(`  - ${productsThatNeedDeeplink.length}개의 새로운 상품에 대한 딥링크 변환 요청...`);
-        const shortenedUrlMap = await getShortenedUrls(productsThatNeedDeeplink);
-        
-        // 5. 새로 받은 딥링크를 업데이트합니다.
-        productsThatNeedDeeplink.forEach(product => {
-            if (shortenedUrlMap.has(product.productId)) {
-                product.productUrl = shortenedUrlMap.get(product.productId);
-            }
-        });
-    } else {
-        console.log("  - 딥링크가 필요한 새로운 상품이 없습니다.");
-    }
-
-    // 6. 기존에 있던 상품들의 딥링크는 이전 데이터에서 가져와 복원합니다.
-    currentRunProducts.forEach((product, productIdStr) => {
-        if (referenceProducts.has(productIdStr)) {
-            product.productUrl = referenceProducts.get(productIdStr).productUrl;
-        }
-    });
-
-    // 7. 최종 결과를 파일에 덮어씁니다. (순위에서 밀려난 상품은 자동으로 제거됨)
+    
+    // 4. 최종 결과를 파일에 덮어씁니다. (순위에서 밀려난 상품은 자동으로 제거됨)
     if (currentRunProducts.size > 0) {
         const productArray = Array.from(currentRunProducts.values());
         fs.writeFileSync(OUTPUT_FILENAME, JSON.stringify(productArray, null, 2), 'utf-8');
