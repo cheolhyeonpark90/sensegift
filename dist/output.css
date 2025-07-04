@@ -632,10 +632,6 @@ video {
   z-index: 50;
 }
 
-.col-span-full {
-  grid-column: 1 / -1;
-}
-
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -673,20 +669,8 @@ video {
   margin-top: 4rem;
 }
 
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.mt-auto {
-  margin-top: auto;
-}
-
-.block {
-  display: block;
 }
 
 .inline-block {
@@ -707,10 +691,6 @@ video {
 
 .h-10 {
   height: 2.5rem;
-}
-
-.h-64 {
-  height: 16rem;
 }
 
 .h-8 {
@@ -737,10 +717,6 @@ video {
   width: 2rem;
 }
 
-.w-full {
-  width: 100%;
-}
-
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -751,10 +727,6 @@ video {
 
 .max-w-4xl {
   max-width: 56rem;
-}
-
-.flex-grow {
-  flex-grow: 1;
 }
 
 .-translate-x-1\/2 {
@@ -789,10 +761,6 @@ video {
   flex-direction: column;
 }
 
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
 .items-center {
   align-items: center;
 }
@@ -803,10 +771,6 @@ video {
 
 .justify-between {
   justify-content: space-between;
-}
-
-.gap-2 {
-  gap: 0.5rem;
 }
 
 .gap-8 {
@@ -820,6 +784,12 @@ video {
 
 .gap-y-12 {
   row-gap: 3rem;
+}
+
+.space-x-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.25rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-x-4 > :not([hidden]) ~ :not([hidden]) {
@@ -858,16 +828,6 @@ video {
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .rounded-2xl {
   border-radius: 1rem;
 }
@@ -878,10 +838,6 @@ video {
 
 .rounded-full {
   border-radius: 9999px;
-}
-
-.rounded-xl {
-  border-radius: 0.75rem;
 }
 
 .border {
@@ -933,26 +889,12 @@ video {
   --tw-bg-opacity: 0.5;
 }
 
-.object-cover {
-  -o-object-fit: cover;
-     object-fit: cover;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
 .p-6 {
   padding: 1.5rem;
 }
 
 .p-8 {
   padding: 2rem;
-}
-
-.px-3 {
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
 }
 
 .px-4 {
@@ -968,11 +910,6 @@ video {
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
-}
-
-.py-1\.5 {
-  padding-top: 0.375rem;
-  padding-bottom: 0.375rem;
 }
 
 .py-12 {
@@ -1013,10 +950,6 @@ video {
 
 .pt-16 {
   padding-top: 4rem;
-}
-
-.pt-2 {
-  padding-top: 0.5rem;
 }
 
 .text-left {
@@ -1064,10 +997,6 @@ video {
 
 .font-bold {
   font-weight: 700;
-}
-
-.font-medium {
-  font-weight: 500;
 }
 
 .font-semibold {
@@ -1267,6 +1196,53 @@ body.overflow-hidden {
   overflow: hidden;
 }
 
+/* --- Pagination Styles (New Design) --- */
+
+.pagination-btn {
+  width: 2.5rem;
+  /* 40px */
+  height: 2.5rem;
+  /* 40px */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  background-color: transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #5a7281;
+  border-radius: 9999px;
+  /* 원형 버튼 */
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-btn:hover:not([disabled]) {
+  background-color: #f3f0e9;
+  /* 부드러운 배경색으로 호버 효과 */
+  color: #2F4858;
+}
+
+.pagination-btn.active {
+  background-color: #2F4858;
+  color: white;
+  border-color: #2F4858;
+  cursor: default;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #b0a89a;
+}
+
 .hover\:text-\[\#2F4858\]:hover {
   --tw-text-opacity: 1;
   color: rgb(47 72 88 / var(--tw-text-opacity, 1));
@@ -1294,20 +1270,18 @@ body.overflow-hidden {
     margin-top: 5rem;
   }
 
-  .sm\:h-72 {
-    height: 18rem;
-  }
-
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sm\:p-10 {
-    padding: 2.5rem;
+  .sm\:space-x-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
-  .sm\:p-5 {
-    padding: 1.25rem;
+  .sm\:p-10 {
+    padding: 2.5rem;
   }
 
   .sm\:px-6 {
@@ -1318,11 +1292,6 @@ body.overflow-hidden {
   .sm\:py-20 {
     padding-top: 5rem;
     padding-bottom: 5rem;
-  }
-
-  .sm\:py-4 {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
   }
 
   .sm\:text-2xl {
@@ -1342,11 +1311,6 @@ body.overflow-hidden {
 
   .sm\:text-lg {
     font-size: 1.125rem;
-    line-height: 1.75rem;
-  }
-
-  .sm\:text-xl {
-    font-size: 1.25rem;
     line-height: 1.75rem;
   }
 }
