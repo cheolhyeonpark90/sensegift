@@ -4,8 +4,8 @@ name: Collect Keywords and Coupang Products
 # 이 워크플로우가 언제 실행될지 정의합니다.
 on:
   # 1. 매주 월요일 새벽 3시(KST)에 자동으로 실행됩니다. (UTC 기준 일요일 18시)
-  # schedule:
-    # - cron: '0 18 * * 0'
+  schedule:
+    - cron: '0 18 * * 0'
   
   # 2. GitHub Actions 탭에서 수동으로 실행할 수도 있습니다.
   workflow_dispatch:
